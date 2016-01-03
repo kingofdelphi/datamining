@@ -1,19 +1,20 @@
 function [U, S, V] = full_svd(A)
+   eps = 0.05;
    M = A' * A;
    [NV, Vv] = eigs(M, length(M));
    V = [];
    Nv = [];
    U = [];
-   m = length(A(:, 1));
-   n = length(A(1, :));
+   m = rows(A);
+   n = columns(A);
    c = m;
-   for i = 1 : length(M)
-       if (Vv(i, i) > 0)
+   for i = 1 : rows(M)
+       if (Vv(i, i) > eps)
            V = [V, NV(:, i)];
            if (c > 0)
-               U = [U, A * V(:, i) ./ sqrt(Vv(i, i))];
+               U = [U, A * NV(:, i) / sqrt(Vv(i, i))];
                c--;
-           end
+           end;
            Nv = [Nv, sqrt(Vv(i, i))];
        end;
    end;

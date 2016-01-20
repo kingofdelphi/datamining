@@ -29,7 +29,7 @@ class ID3:
         splt = self.split_attr(s, bst)
         res = self.Node("", bst)
         for k, v in splt.items(): 
-            res.sib[k] = self.id3(v, av_attr - set(bst))
+            res.sib[k] = self.id3(v, av_attr - {bst})
         return res
 
     def __init__(self, train_data, attr):

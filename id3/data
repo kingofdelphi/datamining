@@ -1,5 +1,5 @@
-PlayBall # attribute to be decided
-Outlook Temperature Humidity Wind PlayBall
+Playball
+Outlook Temperature Humidity Wind Playball
 Sunny	Hot	High	Weak	No
 Sunny	Hot	High	Strong	No
 Overcast	Hot	High	Weak	Yes
@@ -14,3 +14,4 @@ Sunny	Mild	Normal	Strong	Yes
 Overcast	Mild	High	Strong	Yes
 Overcast	Hot	Normal	Weak	Yes
 Rain	Mild	High	Strong	No
+

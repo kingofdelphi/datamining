@@ -71,7 +71,7 @@ class ID3:
 def main():
     f = open('data', 'r')
     dattr = f.readline().split()[0]
-    data = [i.split() for i in f if i != []]
+    data = [i.split() for i in f if i.split() != []]
     a = ID3(data, dattr)
     a.build()
     a.trace()

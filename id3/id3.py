@@ -3,43 +3,41 @@ from math import *
 SPC = "   "
 
 class ID3:
-    def entropy(self, s, attr):
-        tot, ind = len(s), self.org_dataset[0].index(attr)
-        p = [self.org_dataset[i][ind] for i in s]
-        return -sum(p.count(i) * log2(p.count(i) / tot) for i in set(p)) / tot
+    def entropy(self, s):
+        p, tot = [self.org_dataset[i][self.hpos] for i in s], len(s)
+        return 0 if p.count(p[0]) == tot else -sum(p.count(i) * log2(p.count(i) / tot) for i in {*p}) / tot
 
-    def choose_best(self, s, av_attr, attr):
+    def choose_best(self, s, av_attr):
         metric = []
-        ent = self.entropy(s, attr)
         tot = len(s)
         for i in av_attr:
             splt = self.split_attr(s, i)
-            ig = sum(len(v) * self.entropy(v, attr) for k, v in splt.items()) / tot
-            metric.append([ent - ig, i])
-        return max(metric)[1]
+            info = sum(len(v) * self.entropy(v) for v in splt.values()) / tot
+            metric.append([info, i])
+        return min(metric)[1]
 
     def id3(self, s, av_attr):
-        p = self.org_dataset[0].index(self.dattr)
+        c = [self.org_dataset[i][self.hpos] for i in s]
+        if self.entropy(s) == 0:
+            return self.Node(c[0], self.dattr)
         if not av_attr: 
-            return self.Node(self.org_dataset[s[0]][p], self.dattr)
-        c = [self.org_dataset[i][p] for i in s]
-        if c.count(c[0]) == len(c): 
-            return self.Node(max(set(c), key = c.count), self.dattr)
-        bst = self.evalfunc(s, av_attr, self.dattr)
+            return self.Node(max({*c}, key = c.count), self.dattr)
+        bst = self.evalfunc(s, av_attr)
         splt = self.split_attr(s, bst)
         res = self.Node("", bst)
-        for k, v in splt.items(): 
+        for k, v in splt.items(): #rem: add decisions for remaining classes of 'bst' to cover all scenarios
             res.sib[k] = self.id3(v, av_attr - {bst})
         return res
 
-    def __init__(self, train_data, attr):
+    def __init__(self, train_data, dattr):
         self.org_dataset = train_data
+        self.hpos = train_data[0].index(dattr)
         self.decision_tree = None
-        self.dattr = attr
+        self.dattr = dattr
         self.evalfunc = self.choose_best
 
     def build(self):
-        self.decision_tree = self.id3([i + 1 for i in range(len(self.org_dataset) - 1)], set(self.org_dataset[0]) - set([self.dattr]))
+        self.decision_tree = self.id3([i + 1 for i in range(len(self.org_dataset) - 1)], set(self.org_dataset[0]) - {self.dattr})
 
     def trace(self): 
         self.decision_tree.trace()
@@ -50,7 +48,7 @@ class ID3:
             self.label = lbl
             self.div_attr = d
         def trace(self, indent = True, gap = ""):
-            if self.sib == {}: 
+            if self.sib == {}:
                 print(gap, self.div_attr, '=', self.label)
             else:
                 dl = ""
@@ -60,8 +58,8 @@ class ID3:
                     v.trace(indent, gap + SPC if indent else gap)
 
     def split_attr(self, s, attr):
-        splt = {}
         p = self.org_dataset[0].index(attr)
+        splt = {}
         for i in s:
             k = self.org_dataset[i][p]
             if k in splt: splt[k].append(i)

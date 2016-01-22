@@ -25,8 +25,8 @@ class ID3:
         bst = self.evalfunc(s, av_attr)
         splt = self.split_attr(s, bst)
         res = self.Node("", bst)
-        for k, v in splt.items(): #rem: add decisions for remaining classes of 'bst' to cover all scenarios
-            res.sib[k] = self.id3(v, av_attr - {bst})
+        #rem: add decisions for remaining classes of 'bst' to cover all scenarios
+        res.sib = {k : self.id3(v, av_attr - {bst}) for k, v in splt.items()}
         return res
 
     def __init__(self, train_data, dattr):
